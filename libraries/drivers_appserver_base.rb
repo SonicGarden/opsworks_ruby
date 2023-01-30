@@ -59,7 +59,6 @@ module Drivers
           source "#{opts[:adapter]}.monitrc.erb"
           cookbook opts[:source_cookbook].to_s
           variables opts
-          notifies :run, 'execute[monit reload]', :immediately
         end
       end
 
