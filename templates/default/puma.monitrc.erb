@@ -4,9 +4,11 @@
 <% config_file = File.join(@deploy_to, 'shared/config/puma.rb') %>
 <% env = @environment.map {|k,v| "#{k}=\"#{v}\""}.join(' ') %>
 <% pumactl = "#{env} bundle exec pumactl -F #{config_file}"%>
+<% sprockets_manifest = "public/assets/.sprockets-manifest.json" %>
+<% webpacker_manifest = "public/packs/manifest.json" %>
 
 check process <%= @appserver_name %>_<%= @app_shortname %> with pidfile <%= pid_file %>
-start program = "/bin/sh -c 'cd <%= app_dir %> && <%= pumactl %> start | logger -t <%= @appserver_name %>-<%= @app_shortname %>'" as uid "<%= node['deployer']['user'] %>" and gid "<%= node['deployer']['group'] %>" with timeout 90 seconds
-restart program = "/bin/sh -c '(cd <%= app_dir %> && if [ -f <%= state_file %> ]; then <%= pumactl %> restart; else <%= pumactl %> start; fi) | logger -t <%= @appserver_name %>-<%= @app_shortname %>'" as uid "<%= node['deployer']['user'] %>" and gid "<%= node['deployer']['group'] %>" with timeout 90 seconds
+start program = "/bin/sh -c 'cd <%= app_dir %> && (test -f <%= sprockets_manifest %> || test -f <%= webpacker_manifest %>) && <%= pumactl %> start | logger -t <%= @appserver_name %>-<%= @app_shortname %>'" as uid "<%= node['deployer']['user'] %>" and gid "<%= node['deployer']['group'] %>" with timeout 90 seconds
+restart program = "/bin/sh -c '(cd <%= app_dir %> && (test -f <%= sprockets_manifest %> || test -f <%= webpacker_manifest %>) && if [ -f <%= state_file %> ]; then <%= pumactl %> restart; else <%= pumactl %> start; fi) | logger -t <%= @appserver_name %>-<%= @app_shortname %>'" as uid "<%= node['deployer']['user'] %>" and gid "<%= node['deployer']['group'] %>" with timeout 90 seconds
 stop program = "/bin/sh -c 'cd <%= app_dir %> && <%= pumactl %> stop | logger -t <%= @appserver_name %>-<%= @app_shortname %>'" as uid "<%= node['deployer']['user'] %>" and gid "<%= node['deployer']['group'] %>" with timeout 90 seconds
 group <%= @appserver_name %>_<%= @app_shortname.to_s %>_group
