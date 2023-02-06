@@ -6,7 +6,7 @@
 <% pumactl = "#{env} bundle exec pumactl -F #{config_file}"%>
 
 check process <%= @appserver_name %>_<%= @app_shortname %> with pidfile <%= pid_file %>
-start program = "/bin/sh -c 'cd <%= app_dir %> && <%= pumactl %> start | logger -t <%= @appserver_name %>-<%= @app_shortname %>'" as uid "<%= node['deployer']['user'] %>" and gid "<%= node['deployer']['group'] %>" with timeout 90 seconds
-restart program = "/bin/sh -c '(cd <%= app_dir %> && if [ -f <%= state_file %> ]; then <%= pumactl %> restart; else <%= pumactl %> start; fi) | logger -t <%= @appserver_name %>-<%= @app_shortname %>'" as uid "<%= node['deployer']['user'] %>" and gid "<%= node['deployer']['group'] %>" with timeout 90 seconds
-stop program = "/bin/sh -c 'cd <%= app_dir %> && <%= pumactl %> stop | logger -t <%= @appserver_name %>-<%= @app_shortname %>'" as uid "<%= node['deployer']['user'] %>" and gid "<%= node['deployer']['group'] %>" with timeout 90 seconds
+start program = "/bin/sh -c 'cd <%= app_dir %> && <%= pumactl %> start | logger -t <%= @appserver_name %>-<%= @app_shortname %>'" as uid "<%= node['deployer']['user'] %>" and gid "<%= node['deployer']['group'] %>" with timeout 30 seconds
+restart program = "/bin/sh -c '(cd <%= app_dir %> && if [ -f <%= state_file %> ]; then <%= pumactl %> restart; else <%= pumactl %> start; fi) | logger -t <%= @appserver_name %>-<%= @app_shortname %>'" as uid "<%= node['deployer']['user'] %>" and gid "<%= node['deployer']['group'] %>" with timeout 30 seconds
+stop program = "/bin/sh -c 'cd <%= app_dir %> && <%= pumactl %> stop | logger -t <%= @appserver_name %>-<%= @app_shortname %>'" as uid "<%= node['deployer']['user'] %>" and gid "<%= node['deployer']['group'] %>" with timeout 30 seconds
 group <%= @appserver_name %>_<%= @app_shortname.to_s %>_group
