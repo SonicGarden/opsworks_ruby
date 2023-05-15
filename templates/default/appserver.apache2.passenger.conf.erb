@@ -81,6 +81,10 @@ Header always unset "X-Powered-By"
   <% end %>
 <% end %>
 
+<% if node['ruby-yjit'] == 'true' %>
+  SetEnv RUBY_YJIT_ENABLE 1
+<% end %>
+
   <%= @out[:extra_config] %>
 
 </VirtualHost>
@@ -180,6 +184,10 @@ SSLStaplingCache "shmcb:logs/stapling-cache(150000)"
   ErrorDocument <%= status %> /<%= file %>
   <% end %>
   <% end %>
+
+<% if node['ruby-yjit'] == 'true' %>
+  SetEnv RUBY_YJIT_ENABLE 1
+<% end %>
 
   <%= @out[:extra_config_ssl] %>
 

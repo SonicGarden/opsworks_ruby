@@ -3,6 +3,7 @@
 <% app_dir = File.join(@deploy_to, 'current') %>
 <% config_file = File.join(@deploy_to, 'shared/config/puma.rb') %>
 <% env = @environment.map {|k,v| "#{k}=\"#{v}\""}.join(' ') %>
+<% env = "#{env} RUBY_YJIT_ENABLE=1" if @yjit_enabled %>
 <% pumactl = "#{env} bundle exec pumactl -F #{config_file}"%>
 
 check process <%= @appserver_name %>_<%= @app_shortname %> with pidfile <%= pid_file %>
