@@ -3,11 +3,13 @@
   <% pid_dir = "/run/lock/#{@app_shortname}/" %>
   <% syslog = !!@out[:syslog] ? "2>&1 | logger -t delayed_job-#{identifier}" : '' %>
   <% queues = @out[:queues].present? ? '--queues=' + Array.wrap(@out[:queues]).join(',') : '' %>
+  <% env = @environment.map {|k,v| "#{k}=\"#{v}\""}.join(' ') %>
+  <% env = "#{env} RUBY_YJIT_ENABLE=1" if @yjit_enabled %>
 
 check process delayed_job_<%= identifier.to_s %>
   with pidfile <%= pid_dir.to_s %>delayed_job.<%= n %>.pid
-  start program = "/bin/su - <%= node['deployer']['user'] %> -c 'cd <%= File.join(@deploy_to, 'current') %> && <%= @environment.map {|k,v| "#{k}=\"#{v}\""}.join(' ') %> bin/delayed_job start --pid-dir=<%= pid_dir.to_s %> -i <%= n %> <%= queues.to_s %> <%= syslog.to_s %>'" with timeout 30 seconds
-  stop  program = "/bin/su - <%= node['deployer']['user'] %> -c 'cd <%= File.join(@deploy_to, 'current') %> && <%= @environment.map {|k,v| "#{k}=\"#{v}\""}.join(' ') %> bin/delayed_job stop --pid-dir=<%= pid_dir.to_s %> -i <%= n %>'" with timeout 30 seconds
+  start program = "/bin/su - <%= node['deployer']['user'] %> -c 'cd <%= File.join(@deploy_to, 'current') %> && <%= env %> bin/delayed_job start --pid-dir=<%= pid_dir.to_s %> -i <%= n %> <%= queues.to_s %> <%= syslog.to_s %>'" with timeout 30 seconds
+  stop  program = "/bin/su - <%= node['deployer']['user'] %> -c 'cd <%= File.join(@deploy_to, 'current') %> && <%= env %> bin/delayed_job stop --pid-dir=<%= pid_dir.to_s %> -i <%= n %>'" with timeout 30 seconds
   group delayed_job_<%= @application.to_s %>_group
 
 <% end %>
