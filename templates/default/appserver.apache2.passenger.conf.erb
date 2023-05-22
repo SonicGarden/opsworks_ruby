@@ -81,7 +81,7 @@ Header always unset "X-Powered-By"
   <% end %>
 <% end %>
 
-<% if node['ruby-yjit'] == 'true' %>
+<% if !!node['ruby-yjit'] %>
   SetEnv RUBY_YJIT_ENABLE 1
 <% end %>
 
@@ -185,7 +185,7 @@ SSLStaplingCache "shmcb:logs/stapling-cache(150000)"
   <% end %>
   <% end %>
 
-<% if node['ruby-yjit'] == 'true' %>
+<% if !!node['ruby-yjit'] %>
   SetEnv RUBY_YJIT_ENABLE 1
 <% end %>
 

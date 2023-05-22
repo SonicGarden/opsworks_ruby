@@ -51,7 +51,7 @@ module Drivers
           deploy_to: deploy_dir(app),
           environment: embed_environment_in_monit? ? environment : {},
           source_cookbook: appserver_monit_template_cookbook,
-          yjit_enabled: node['ruby-yjit'] == 'true'
+          yjit_enabled: !!node['ruby-yjit']
         }
         file_path = File.join(node['monit']['basedir'],
                               "#{opts[:appserver_name]}_#{opts[:app_shortname]}.monitrc")

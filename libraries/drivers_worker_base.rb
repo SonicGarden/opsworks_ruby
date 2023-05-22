@@ -33,7 +33,7 @@ module Drivers
           name: app['name'],
           out: out,
           source_cookbook: worker_monit_template_cookbook,
-          yjit_enabled: node['ruby-yjit'] == 'true'
+          yjit_enabled: !!node['ruby-yjit']
         }
 
         context.template File.join(node['monit']['basedir'],
