@@ -4,11 +4,13 @@
   <% pid_file = "#{pid_dir.to_s}good_job.#{n}.pid" %>
   <% syslog = !!@out[:syslog] ? "2>&1 | logger -t good_job-#{identifier}" : '' %>
   <% queues = @out[:queues].present? ? '--queues=' + Array.wrap(@out[:queues]).join(',') : '' %>
+  <% env = @environment.map {|k,v| "#{k}=\"#{v}\""}.join(' ') %>
+  <% env = "#{env} RUBY_YJIT_ENABLE=1" if @yjit_enabled %>
 
   check process good_job_<%= identifier.to_s %>
   with pidfile <%= pid_file %>
-  start program = "/bin/su - <%= node['deployer']['user'] %> -c 'cd <%= File.join(@deploy_to, 'current') %> && <%= @environment.map {|k,v| "#{k}=\"#{v}\""}.join(' ') %> bundle exec good_job start --daemonize --pidfile=<%= pid_file %> <%= queues.to_s %> <%= syslog.to_s %>'" with timeout 90 seconds
-  stop program = "/bin/su - <%= node['deployer']['user'] %> -c 'cd <%= File.join(@deploy_to, 'current') %> && <%= @environment.map {|k,v| "#{k}=\"#{v}\""}.join(' ') %> cat <%= pid_file %> | xargs --no-run-if-empty kill -QUIT'" with timeout 90 seconds
+  start program = "/bin/su - <%= node['deployer']['user'] %> -c 'cd <%= File.join(@deploy_to, 'current') %> && <%= env %> bundle exec good_job start --daemonize --pidfile=<%= pid_file %> <%= queues.to_s %> <%= syslog.to_s %>'" with timeout 90 seconds
+  stop program = "/bin/su - <%= node['deployer']['user'] %> -c 'cd <%= File.join(@deploy_to, 'current') %> && <%= env %> cat <%= pid_file %> | xargs --no-run-if-empty kill -QUIT'" with timeout 90 seconds
   group good_job_<%= @application.to_s %>_group
 
 <% end %>

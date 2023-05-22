@@ -32,7 +32,8 @@ module Drivers
           environment: embed_environment_in_monit? ? environment : { 'RAILS_ENV' => deploy_env },
           name: app['name'],
           out: out,
-          source_cookbook: worker_monit_template_cookbook
+          source_cookbook: worker_monit_template_cookbook,
+          yjit_enabled: !!node['ruby-yjit']
         }
 
         context.template File.join(node['monit']['basedir'],
